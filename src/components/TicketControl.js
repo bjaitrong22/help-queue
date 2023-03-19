@@ -4,6 +4,7 @@ import HelpQuestionTwo from './HelpQuestionTwo';
 import HelpQuestionThree from './HelpQuestionThree';
 import NewTicketForm from './NewTicketForm';
 import TicketList from './TicketList';
+import TicketDetail from './TicketDetail';
 
 class TicketControl extends React.Component {
 
@@ -20,9 +21,16 @@ class TicketControl extends React.Component {
   }
 
   handleClick = () => {
-    this.setState(prevState => ({
+    if (this.state.selectedTicket != null) {
+      this.setState({
+        formVisibleOnPage: false,
+        selectedTicket: null
+      });
+    } else {
+      this.setState(prevState => ({
       formVisibleOnPage: !prevState.formVisibleOnPage
-    }));
+      }));
+    }
   }
 
   handleQOneClick = () => {
@@ -77,6 +85,7 @@ class TicketControl extends React.Component {
   if (this.state.selectedTicket != null) {
     currentlyVisibleState = <TicketDetail ticket = {this.state.selectedTicket} />
     buttonText = "Return to Ticket List";
+    button = <button onClick={this.handleClick}>{buttonText}</button>;
   } else if (this.state.formVisibleOnPage) {
       if (!this.state.helpQuestionOne) {
         currentlyVisibleState = <HelpQuestionOne />;
@@ -100,7 +109,7 @@ class TicketControl extends React.Component {
         button = <button onClick={this.formReset}>{buttonText}</button>;
       }
     } else {
-      currentlyVisibleState = <TicketList ticketList={this.state.mainTicketList} />;
+      currentlyVisibleState = <TicketList ticketList={this.state.mainTicketList} onTicketSelection={this.handleChangingSelectedTicket} />;
       buttonText = "Add Ticket";
       button = <button onClick={this.handleClick}>{buttonText}</button>;
     }
