@@ -13,7 +13,9 @@ class TicketControl extends React.Component {
       helpQuestionOne: false,
       helpQuestionTwo: false,
       helpQuestionThree: false,
-      formVisibleOnPage: false
+      formVisibleOnPage: false,
+      mainTicketList: [],
+      selectedTicket: null
     };
   }
 
@@ -41,6 +43,22 @@ class TicketControl extends React.Component {
     }));
   }
 
+  handleAddingNewTicketToList = (newTicket) => {
+    const newMainTicketList = this.state.mainTicketList.concat(newTicket);
+    this.setState({
+      mainTicketList: newMainTicketList, 
+      formVisibleOnPage: false,
+      helpQuestionOne: false,
+      helpQuestionTwo: false,
+      helpQuestionThree: false
+    });
+  }
+
+  handleChangingSelectedTicket = (id) => {
+    const selectedTicket = this.state.mainTicketList.filter(ticket => ticket.id === id)[0];
+    this.setState({selectedTicket: selectedTicket});
+  }
+
   formReset = () => {
     this.setState({
       formVisibleOnPage: false,
@@ -55,9 +73,11 @@ class TicketControl extends React.Component {
     let button= null;
     let buttonText = null;
     let buttonNo = null;
-    // let buttonReturn = null;
-    
-    if (this.state.formVisibleOnPage) {
+  
+  if (this.state.selectedTicket != null) {
+    currentlyVisibleState = <TicketDetail ticket = {this.state.selectedTicket} />
+    buttonText = "Return to Ticket List";
+  } else if (this.state.formVisibleOnPage) {
       if (!this.state.helpQuestionOne) {
         currentlyVisibleState = <HelpQuestionOne />;
         buttonText = "Yes";
@@ -75,12 +95,12 @@ class TicketControl extends React.Component {
         buttonNo = <button onClick={this.formReset}>No</button>;
       }
       else {
-        currentlyVisibleState = <NewTicketForm />;
+        currentlyVisibleState = <NewTicketForm onNewTicketCreation={this.handleAddingNewTicketToList} />
         buttonText = "Return to Ticket List";
         button = <button onClick={this.formReset}>{buttonText}</button>;
       }
     } else {
-      currentlyVisibleState = <TicketList />
+      currentlyVisibleState = <TicketList ticketList={this.state.mainTicketList} />;
       buttonText = "Add Ticket";
       button = <button onClick={this.handleClick}>{buttonText}</button>;
     }
